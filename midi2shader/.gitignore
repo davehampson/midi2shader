@@ -1,0 +1,13 @@
+MyApplication.idb
+MyApplication.ilk
+MyApplication.ncb
+MyApplication.opensdf
+MyApplication.pdb
+MyApplication.sdf
+MyApplication.suo
+MyApplication.vcproj.*.user
+MyApplication.vcproj.user
+MyApplication.vcxproj.filters
+MyApplication.vcxproj.user
+ipch/
+obj/
