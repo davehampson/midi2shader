@@ -196,7 +196,9 @@ static int ReadBlock(FILE* file)
 static void PrintHeader()
 {
 	printf(
-		"float GetPitch(float time)\n"
+		"// Converted by https://github.com/davehampson/midi2shader\n"
+		"\n"
+		"vec2 GetPitch(float time)\n"
 		"{\n"
 	);
 }
@@ -204,13 +206,13 @@ static void PrintHeader()
 static void PrintFooter()
 {
 	printf(
-		"	return 0.0;\n"
+		"	return vec2(0.0, 0.0);\n"
 		"}\n"
 		"\n"
 		"vec2 mainSound(float time)\n"
 		"{\n"
-		"	float freq = GetPitch(time);\n"
-		"	return vec2( sin(6.2831*freq*time) * 0.125);\n"
+		"	vec2 freq = GetPitch(time);\n"
+		"	return vec2(sin(6.2831 * freq.x *time) * 0.125 * exp(-3.0 * freq.y));\n"
 		"}\n"
 	);
 }
@@ -249,14 +251,15 @@ int main(int argc, char* argv[])
 	PrintHeader();
 
 	int i = 0;
-	for ( ; i < (int)g_Events->size() && i < noteLimit; i++)
+	for ( ; i < (int)g_Events->size() - 1 && i < noteLimit; i++)
 	{
-		const KeyEvent& ke = (*g_Events)[i];
+		const KeyEvent& curr = (*g_Events)[i];
+		const KeyEvent& next = (*g_Events)[i + 1];
 
-		float e = ((float)(ke.note - 69)) / 12.0f;
+		float e = ((float)(curr.note - 69)) / 12.0f;
 		float freq = powf(2.0f, e) * 440.0f;
 
-		printf("\tif (time < %6.2f) return %5.1f;\n", ke.t, freq);
+		printf("\tif (time >= %6.2f && time < %6.2f) return vec2(%5.1f, time - %.2f);\n", curr.t, next.t, freq, curr.t);
 	}
 
 	PrintFooter();
