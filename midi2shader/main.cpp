@@ -193,14 +193,38 @@ static int ReadBlock(FILE* file)
 	return 0; // Zero = Still going, Nonzero = stop
 }
 
+static void PrintHeader()
+{
+	printf(
+		"float GetPitch(float time)\n"
+		"{\n"
+	);
+}
+
+static void PrintFooter()
+{
+	printf(
+		"	return 0.0;\n"
+		"}\n"
+		"\n"
+		"vec2 mainSound(float time)\n"
+		"{\n"
+		"	float freq = GetPitch(time);\n"
+		"	return vec2( sin(6.2831*freq*time) * 0.125);\n"
+		"}\n"
+	);
+}
+
 int main(int argc, char* argv[])
 {
 	const char* inputMidi = "test3.mid";
 	
 	if (argc >= 2)
-	{
 		inputMidi = argv[1];
-	}
+
+	int noteLimit = INT_MAX;
+	if (argc >= 3)
+		 noteLimit = strtol(argv[2], NULL, 0);
 
 	g_Events = new std::vector<KeyEvent>;
 	if (!g_Events)
@@ -222,8 +246,10 @@ int main(int argc, char* argv[])
 	fclose(file);
 	file = NULL;
 
+	PrintHeader();
+
 	int i = 0;
-	for ( ; i < (int)g_Events->size(); i++)
+	for ( ; i < (int)g_Events->size() && i < noteLimit; i++)
 	{
 		const KeyEvent& ke = (*g_Events)[i];
 
@@ -232,6 +258,8 @@ int main(int argc, char* argv[])
 
 		printf("\tif (time < %6.2f) return %5.1f;\n", ke.t, freq);
 	}
+
+	PrintFooter();
 
 	delete g_Events;
 	g_Events = 0;
