@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <vector>
 #include <crtdbg.h>
+#include <math.h>
 
 static int GetMSBInt(const unsigned char* data)
 {
